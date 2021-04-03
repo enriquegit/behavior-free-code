@@ -1,0 +1,161 @@
+---
+title: "SMOTE oversampling example"
+author: "Enrique Garcia Ceja"
+runtime: shiny
+output: html_document
+---
+
+```{r setup, include=FALSE, message = F}
+knitr::opts_chunk$set(echo = TRUE)
+```
+```{r echo=FALSE, warning=FALSE}
+library(ggplot2)
+library(ggalt)
+library(gridExtra)
+
+smote.class <- function(completeDf, targetClass, N, k){
+  #smotes the targetClass
+  #N smote percent. Multiple of 100
+  #k number of nieghbors
+  #assumes that the first column is the class
+  
+  if(N == 0) return(NULL)
+  
+  classIdxs <- which(completeDf$label == targetClass)
+  
+  #data frame containing just the targetClass
+  targetClassDf <- completeDf[classIdxs,]
+  
+  #number of minority class samples
+  n <- nrow(targetClassDf)
+  
+  #indexes for targetClassDf
+  idxs <- 1:n
+  
+  if(N < 100){
+    n <- (N/100) * n
+    if(n < 1) n <- 1
+    N <- 100
+    idxs <- sample(idxs, size = n, replace = F)
+  }
+  
+  N <- as.integer(N/100)
+  
+  ###compute k nearest neighbors###
+  #NN stores the indexes to completeDf from the k nearest neighbors of each instance in targetClassDf
+  NN <- NULL
+  
+  distances <- as.matrix(dist(targetClassDf[,-1]))
+  for(i in idxs){
+    sorted <- sort(distances[i,], decreasing = F, index.return = T)
+    
+    #indexes of nn from targetClassDf
+    nn <- sorted$ix[2:(k+1)]
+    
+    #update indexes to point to completeDf
+    nn <- classIdxs[nn]
+    
+    NN <- rbind(NN, nn)
+  }
+  
+  ###generate synthetic instances###
+  newInstances <- NULL
+  
+  #indexes of original sample used to create the synthetic one (point to originalDf)
+  originalSampleIdxs <- NULL
+  
+  #indexes of nearest neighbor used to create the synthetic instance (point to originalDf)
+  nnIdxs <- NULL
+  
+  for(i in 1:n){
+    for(j in 1:N){
+      #select a random nn
+      originalSample <- completeDf[classIdxs[i],]
+      originalSampleIdxs <- c(originalSampleIdxs, classIdxs[i])
+      tmp <- NN[i, sample(1:k, 1)]
+      nnSample <- completeDf[tmp,]
+      nnIdxs <- c(nnIdxs, tmp)
+      
+      dif <- nnSample[,-1] - originalSample[,-1]
+      gap <- runif(ncol(dif))
+      synthetic <- originalSample
+      synthetic[,2:ncol(originalSample)] <- originalSample[,-1] + (gap * dif)
+      newInstances <- rbind(newInstances, synthetic)
+    }
+  }
+  
+  res <- list(synthetic=newInstances, sampleIdxs=originalSampleIdxs, nnIdxs = nnIdxs)
+  return(res)
+}
+
+```
+
+
+
+
+```{r include=FALSE}
+#Create random data
+set.seed(123)
+
+n1 <- 200 #majority class
+n2 <- 15 #minority class
+
+x <- rnorm(mean = 0, sd = 0.5, n = n1)
+y <- rnorm(mean = 0, sd = 1, n = n1)
+
+df1 <- data.frame(label=rep("class1", n1), x=x, y=y, stringsAsFactors = T)
+
+x2 <- rnorm(mean = 1.5, sd = 0.5, n = n2)
+y2 <- rnorm(mean = 1.5, sd = 1, n = n2)
+
+df2 <- data.frame(label=rep("class2", n2), x=x2, y=y2, stringsAsFactors = T)
+
+df <- rbind(df1, df2)
+
+```
+
+
+```{r echo=FALSE}
+color1 <- "green"
+color2 <- "blue"
+
+inputPanel(
+  
+  sliderInput("sl_size", label = "sample size:",
+              min = 0, max = n1, value = 0, step = 1)
+)
+
+renderPlot({
+  
+  N <- ceiling(input$sl_size / n2) * 100
+  synthetic <- smote.class(df2, targetClass = "class2", N = N, k = 3)$synthetic
+  
+  if(input$sl_size > 0 && nrow(synthetic) > input$sl_size){
+    synthetic <- synthetic[sample(nrow(synthetic), input$sl_size, replace = F),]
+  }
+  
+  df.new <- rbind(df, synthetic)
+  
+  #scatter plot
+  p1 <- ggplot(df.new, aes(x, y)) +
+  geom_point(aes(colour = label), size = 3, alpha = 0.2) +
+  geom_encircle(aes(fill=label),alpha=0.25) +
+  scale_color_manual(values=c(color1,color2)) +
+  theme_classic() +
+  theme(legend.position="bottom")
+  
+  #barplot
+  t <- as.data.frame(table(df.new$label))
+  p2 <- ggplot(t, aes(x=Var1, y=Freq, fill=Var1)) +
+  geom_bar(stat="identity") +
+  scale_fill_manual(values=c(color1,color2), name = "") +
+  labs(x = "label", y = "count") +
+  theme_classic() +
+  theme(legend.position="bottom")
+  
+  grid.arrange(p1, p2, ncol=2)
+  
+})
+
+
+```

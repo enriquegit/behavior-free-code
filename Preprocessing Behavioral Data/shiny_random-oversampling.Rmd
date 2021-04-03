@@ -1,0 +1,80 @@
+---
+title: "Random oversampling example"
+author: "Enrique Garcia Ceja"
+runtime: shiny
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+```{r echo=FALSE, warning=FALSE, message = FALSE}
+library(ggplot2)
+library(ggalt)
+library(gridExtra)
+
+```
+
+
+
+
+```{r include=FALSE}
+#Create random data
+set.seed(123)
+
+n1 <- 200 #majority class
+n2 <- 15 #minority class
+
+x <- rnorm(mean = 0, sd = 0.5, n = n1)
+y <- rnorm(mean = 0, sd = 1, n = n1)
+
+df1 <- data.frame(label=rep("class1", n1), x=x, y=y, stringsAsFactors = T)
+
+x2 <- rnorm(mean = 1.5, sd = 0.5, n = n2)
+y2 <- rnorm(mean = 1.5, sd = 1, n = n2)
+
+df2 <- data.frame(label=rep("class2", n2), x=x2, y=y2, stringsAsFactors = T)
+
+df <- rbind(df1, df2)
+
+```
+
+
+```{r echo=FALSE}
+color1 <- "green"
+color2 <- "blue"
+
+inputPanel(
+  
+  sliderInput("sl_size", label = "sample size:",
+              min = 0, max = n1, value = 0, step = 1)
+)
+
+renderPlot({
+  
+  new.points <- df2[sample(nrow(df2), size = input$sl_size, replace = T),]
+  df.new <- rbind(df, new.points)
+  
+  #scatter plot
+  p1 <- ggplot(df.new, aes(x, y)) +
+  geom_point(aes(colour = label), size = 3, alpha = 0.2) +
+  geom_encircle(aes(fill=label),alpha=0.25) +
+  scale_color_manual(values=c(color1,color2)) +
+  theme_classic() +
+  theme(legend.position="bottom")
+  
+  #barplot
+  t <- as.data.frame(table(df.new$label))
+  p2 <- ggplot(t, aes(x=Var1, y=Freq, fill=Var1)) +
+  geom_bar(stat="identity") +
+  scale_fill_manual(values=c(color1,color2), name = "") +
+  labs(x = "label", y = "count") +
+  theme_classic() +
+  theme(legend.position="bottom")
+  
+  grid.arrange(p1, p2, ncol=2)
+  
+})
+
+
+```
