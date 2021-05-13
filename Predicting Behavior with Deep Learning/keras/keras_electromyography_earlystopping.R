@@ -152,5 +152,13 @@ history$params$epochs <- length(history$metrics$loss)
 
 plot(history)
 
+# Save model (optional).
+#save_model_hdf5(model, "electromyography_early.hdf5")
+#save_model_tf(model, "electromyography_early_tf")
+
+# Load model (optional).
+#model <- load_model_hdf5("electromyography_early.hdf5")
+#model <- load_model_tf("electromyography_early_tf")
+
 # Evaluate model.
 model %>% evaluate(testset$x, testset$y)

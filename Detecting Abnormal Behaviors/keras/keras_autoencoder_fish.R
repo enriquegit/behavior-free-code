@@ -1,5 +1,5 @@
-source(file.path("..","auxiliary_functions","globals.R"))
-source(file.path("..","auxiliary_functions","functions.R"))
+source(file.path("..","..","auxiliary_functions","globals.R"))
+source(file.path("..","..","auxiliary_functions","functions.R"))
 library(keras)
 library(PRROC)
 
@@ -114,8 +114,14 @@ plot(history)
 # Save model.
 #save_model_hdf5(autoencoder, "fishAutoencoder.hdf5")
 
+# Save it as SavedModel.
+#save_model_tf(autoencoder, "fishAutoencoder_tf")
+
 # Load pre-trained model if you want to get same results from the book.
 #autoencoder <- load_model_hdf5("fishAutoencoder.hdf5")
+
+# Or load the SavedModel version.
+#autoencoder <- load_model_tf("fishAutoencoder_tf")
 
 # Compute MSE of normal test set.
 autoencoder %>% evaluate(as.matrix(test.normal[,-c(1:2)]),

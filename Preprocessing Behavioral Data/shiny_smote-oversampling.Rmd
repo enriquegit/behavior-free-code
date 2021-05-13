@@ -6,9 +6,9 @@ output: html_document
 ---
 
 ```{r setup, include=FALSE, message = F}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = T)
 ```
-```{r echo=FALSE, warning=FALSE}
+```{r echo=FALSE, message=FALSE, warning=FALSE}
 library(ggplot2)
 library(ggalt)
 library(gridExtra)

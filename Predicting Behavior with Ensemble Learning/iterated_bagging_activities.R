@@ -156,8 +156,8 @@ acc.plot <- ggplot(data=tmp,
                    colour = type, group = type,
                    linetype = type)) +
   ggtitle("Bagging Train/Test accuracy") + xlab("# trees") + ylab("Accuracy") +
-  scale_linetype_manual(values=c("solid", "dotted"), name = "") +
-  scale_color_manual(values=c("blue","red"), name = "") +
+  scale_linetype_manual(values=c("dotted", "solid"), name = "") +
+  scale_color_manual(values=c("red","blue"), name = "") +
   geom_line(aes(color=type), size=0.6) +
   theme_minimal() +
   theme(plot.title = element_text(hjust = 0.5),

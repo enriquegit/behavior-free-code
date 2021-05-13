@@ -147,9 +147,13 @@ plot(history)
 
 # Save model (optional).
 #save_model_hdf5(model, "smiles.hdf5")
+#save_model_tf(model, "smiles_tf")
 
-# Load model (optional).
+# Load model (optional to reproduce the book's results).
 #model <- load_model_hdf5("smiles.hdf5")
+
+# Alternatively, load the SavedModel version.
+#model <- load_model_tf("smiles_tf")
 
 # Evaluate model on test set.
 model %>% evaluate(testX, testY)
@@ -189,7 +193,7 @@ transposeImages <- function(x){
   # Define function to rotate images.
   # source: https://stat.ethz.ch/pipermail/r-help/2009-May/391421.html
   y <- array(NA,c(dim(x)[1],dim(x)[2],dim(x)[3],dim(x)[4]))
-  
+
   for(i in 1:dim(x)[1]){
     for(j in 1:dim(x)[4])
       y[i,,,j] <- t(rev(x[i,,,j]))
@@ -210,7 +214,7 @@ sapply(1:16, function(x){
   plot.new()
   rasterImage(data[x,,,], xleft = 0, xright = 1,
               ytop = 0, ybottom = 1, angle = 0, interpolate = FALSE)
-  
+
   title(paste0("", str.predictions[x]), line = 0.5,
         col.main=ifelse(str.predictions[x]==str.groundTruth[x],"green","red"))
 })

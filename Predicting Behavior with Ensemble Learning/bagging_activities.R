@@ -153,4 +153,4 @@ print(plot1)
 # Plot first tree of the last fold.
 # Note that it looks very complex since we set cp = 0.
 library(rpart.plot)
-rpart.plot(treeClassifier$models[[1]], fallen.leaves = F, branch.lty = 1, shadow.col = "gray")
+rpart.plot(treeClassifier$models[[1]], fallen.leaves = F, branch.lty = 1, shadow.col = "gray", roundint=FALSE)

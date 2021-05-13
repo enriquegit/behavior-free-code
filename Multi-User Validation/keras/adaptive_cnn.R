@@ -151,9 +151,13 @@ plot(history)
 
 # Save model.
 save_model_hdf5(model, "user-independent.hdf5")
+#save_model_tf(model, "user-independent_tf")
 
 # Load model.
-model <- load_model_hdf5("user-independent.hdf5")
+#model <- load_model_hdf5("user-independent.hdf5")
+
+# Alternatively, if you saved it as SavedModel.
+#model <- load_model_tf("user-independent_tf")
 
 # Compute performance (accuracy) on the target user test set.
 model %>% evaluate(target.test.x, target.test.y)
@@ -162,7 +166,11 @@ model %>% evaluate(target.test.x, target.test.y)
 #### Adapt the model using the target adaptive data ####
 ########################################################
 
+# Load model.
 adaptive.model <- load_model_hdf5("user-independent.hdf5")
+
+# Alternatively, if you saved it as SavedModel.
+#adaptive.model <- load_model_tf("user-independent_tf")
 
 # Freeze all layers.
 freeze_weights(adaptive.model, from = 1)
@@ -192,10 +200,17 @@ history <- adaptive.model %>% fit(
 print(history)
 
 # Save model.
-save_model_hdf5(adaptive.model, "adaptive-model.hdf5")
+#save_model_hdf5(adaptive.model, "adaptive-model.hdf5")
+
+# Or save it as SavedModel.
+#save_model_tf(adaptive.model, "adaptive-model_tf")
 
 # Load model.
-adaptive.model <- load_model_hdf5("adaptive-model.hdf5")
+#adaptive.model <- load_model_hdf5("adaptive-model.hdf5")
+
+# Or if you saved it as SavedModel.
+#adaptive.model <- load_model_tf("adaptive-model_tf")
+
 
 # Compute performance (accuracy) on the target user test set.
 adaptive.model %>% evaluate(target.test.x, target.test.y)
@@ -205,6 +220,10 @@ adaptive.model %>% evaluate(target.test.x, target.test.y)
 # This is to check that the accuracy increase was not due to more epochs
 # but because the adaptation strategy.
 retrained_model <- load_model_hdf5("user-independent.hdf5")
+
+# Or if you saved it as SavedModel.
+#retrained_model <- load_model_tf("user-independent_tf")
+
 
 # Fit the user-independent model for 50 more epochs.
 history <- retrained_model %>% fit(
@@ -217,10 +236,16 @@ history <- retrained_model %>% fit(
 )
 
 # Save retrained model.
-save_model_hdf5(retrained_model, "user-independent-retrained.hdf5")
+#save_model_hdf5(retrained_model, "user-independent-retrained.hdf5")
+
+# Alternatively, save it as SavedModel.
+#save_model_tf(retrained_model, "user-independent-retrained_tf")
 
 # Load model.
-retrained_model <- load_model_hdf5("user-independent-retrained.hdf5")
+#retrained_model <- load_model_hdf5("user-independent-retrained.hdf5")
+
+# Or if you saved it as SavedModel.
+#retrained_model <- load_model_tf("user-independent-retrained_tf")
 
 # Compute performance (accuracy) on the target user test set.
 retrained_model %>% evaluate(target.test.x, target.test.y)

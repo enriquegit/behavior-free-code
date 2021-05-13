@@ -3,7 +3,7 @@
 # This script will not install keras. Instructions on how to install keras are included in the book appendix.
 
 # IMPORTANT: The intention of this script is to ease the installation of the required packages.
-# This script was tested on R 4.0.2 on Windows 10.
+# This script was tested on R 4.0.5 on Windows 10.
 # This script may not work with your platform.
 
 

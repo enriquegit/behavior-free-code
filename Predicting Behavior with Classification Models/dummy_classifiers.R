@@ -28,6 +28,8 @@ dataset <- rbind(dataset,
 # Store the two possible classes.
 levels <- c("Walking", "Upstairs")
 
+set.seed(1234) # Set seed for reproducibility.
+
 # Shuffle rows.
 dataset <- dataset[sample(nrow(dataset), size = nrow(dataset), replace = F),]
 
@@ -39,7 +41,6 @@ table(dataset$class) / nrow(dataset)
 
 #### Divide into train and test sets. ####
 
-set.seed(1234) # Set seed for reproducibility.
 
 # Select 50% of the data for the train set.
 idxs <- sample(nrow(dataset), size = ceiling(nrow(dataset) * 0.5), replace = FALSE)

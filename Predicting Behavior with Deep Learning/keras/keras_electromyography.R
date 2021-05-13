@@ -147,9 +147,11 @@ plot(history)
 
 # Save model (optional).
 #save_model_hdf5(model, "electromyography.hdf5")
+#save_model_tf(model, "electromyography_tf")
 
 # Load model (optional).
 #model <- load_model_hdf5("electromyography.hdf5")
+#model <- load_model_tf("electromyography_tf")
 
 # Evaluate model.
 model %>% evaluate(testset$x, testset$y)
